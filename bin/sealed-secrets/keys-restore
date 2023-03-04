@@ -1,0 +1,12 @@
+#!/bin/sh
+
+FILE=./var/sealed-secret.yaml
+
+if [ -f "$FILE" ]; then
+  kubectl apply -f "$FILE" -n kube-system
+  kubectl delete pod -n kube-system -l app.kubernetes.io/instance=sealed-secrets
+
+  exit 0
+else
+  echo "$FILE file is missing"
+fi

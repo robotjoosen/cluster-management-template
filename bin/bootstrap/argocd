@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# install ArgoCD
+kubectl create namespace argocd
+helm repo add argo https://argoproj.github.io/argo-helm
+helm upgrade --install argocd argo/argo-cd --namespace argocd --values bin/bootstrap/config/argocd-values.yaml
+helm upgrade --install argocd-apps argo/argocd-apps --namespace argocd --values bin/bootstrap/config/argocd-apps-values.yaml
+
+# wait for ArgoCD deployment to be available
+kubectl wait --for=condition=available --timeout=600s -n argocd --all deployments

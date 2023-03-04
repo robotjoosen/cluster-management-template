@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# deploy all local environment applications
+kubectl apply -f app-of-apps/local-environment.yaml -n argocd
+
+# sleep for a while till application is deployed
+sleep 5
+
+# wait for application to be healthy
+kubectl wait --for=jsonpath='{.status.health.status}'=Healthy --timeout=240s -n argocd --all application
+kubectl wait --for=jsonpath='{.status.sync.status}'=Synced --timeout=240s -n argocd --all application

@@ -1,0 +1,12 @@
+# keep in-sync with applications/argocd-apps/argocd-apps.yaml
+projects:
+  - name: cicd
+    namespace: argocd
+    clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+    destinations:
+      - namespace: '*'
+        server: '*'
+    sourceRepos:
+      - '*'

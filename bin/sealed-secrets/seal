@@ -1,0 +1,20 @@
+#!/bin/sh
+
+CERT_FILE=./var/public-key-cert.pem
+
+while getopts s:f:o: flag
+do
+    case "${flag}" in
+        s) scope=${OPTARG};;
+        f) file=${OPTARG};;
+        o) output=${OPTARG};;
+    esac
+done
+
+SCOPE_ARG=
+if [[ "$scope" = "cluster-wide" ]]; then
+  SCOPE_ARG="--scope cluster-wide"
+fi
+
+kubeseal --fetch-cert > ${CERT_FILE}
+kubeseal --cert ${CERT_FILE} --format yaml $SCOPE_ARG < $file > $output

@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: monitoring
+  source:
+    chart: kube-prometheus-stack
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 45.3.0
+    helm:
+      releaseName: prometheus
+      skipCrds: true
+      values: |
+        grafana:
+          enabled: false
+        alertmanager:
+          enabled: false
+        prometheus:
+          ingress:
+            enabled: true
+            hosts:
+              - prometheus.monitoring.localhost
+  destination:
+    namespace: prometheus
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true

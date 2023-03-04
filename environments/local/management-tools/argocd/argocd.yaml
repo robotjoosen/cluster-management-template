@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: cicd
+  source:
+    chart: argo-cd
+    repoURL: https://argoproj.github.io/argo-helm
+    targetRevision: 5.24.1
+    helm:
+      values: |
+        dex:
+          enabled: false
+        server:
+          ingress:
+            enabled: true
+            ingressClassName: traefik
+            pathType: ImplementationSpecific
+            hosts:
+              - argocd.svc.localhost
+        configs:
+          params:
+            server.insecure: true
+          repositories:
+            cluster-management-repo:
+              url: https://github.com/robotjoosen/cluster-management-template
+            gitops-kustomize-repo:
+              url: https://github.com/robotjoosen/gitops-kustomize-template
+            gitops-microservice-repo:
+              url: https://github.com/robotjoosen/gitops-usvc-base-template
+          cm:
+            resource.customizations: |
+              networking.k8s.io/Ingress:
+                health.lua: |
+                  hs = {}
+                  hs.status = "Healthy"
+                  return hs
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true

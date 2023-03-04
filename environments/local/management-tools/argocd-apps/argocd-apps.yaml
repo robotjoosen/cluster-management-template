@@ -1,0 +1,69 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-apps
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: cicd
+  source:
+    chart: argocd-apps
+    repoURL: https://argoproj.github.io/argo-helm
+    targetRevision: 0.0.9
+    helm:
+      values: |
+        projects:
+          - name: cicd
+            namespace: argocd
+            clusterResourceWhitelist:
+              - group: '*'
+                kind: '*'
+            destinations:
+              - namespace: '*'
+                server: '*'
+            sourceRepos:
+              - '*'
+
+          - name: devtools
+            namespace: argocd
+            clusterResourceWhitelist:
+              - group: '*'
+                kind: '*'
+            destinations:
+              - namespace: '*'
+                server: '*'
+            sourceRepos:
+              - '*'
+
+          - name: ingress
+            namespace: argocd
+            clusterResourceWhitelist:
+              - group: '*'
+                kind: '*'
+            destinations:
+              - namespace: '*'
+                server: '*'
+            sourceRepos:
+              - '*'
+
+          - name: monitoring
+            namespace: argocd
+            clusterResourceWhitelist:
+              - group: '*'
+                kind: '*'
+            destinations:
+              - namespace: '*'
+                server: '*'
+            sourceRepos:
+              - '*'
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - Replace=true
+    automated:
+      prune: true
+      selfHeal: true

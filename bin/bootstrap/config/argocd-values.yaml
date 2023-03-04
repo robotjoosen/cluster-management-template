@@ -1,0 +1,8 @@
+dex:
+  enabled: false
+configs:
+  repositories:
+    gitops-kustomize-template:
+      url: https://github.com/robotjoosen/gitops-kustomize-template
+    gitops-usvc-base-template:
+      url: https://github.com/robotjoosen/gitops-usvc-base-template
